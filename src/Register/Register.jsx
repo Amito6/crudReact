@@ -7,13 +7,30 @@ import {
  } from "react-bootstrap";
  import "./Register.css";
  import { useState } from "react";
+import useHttp from "../Hooks/useHttp";
+ 
 
 
 const Register = () =>{
     const [modal,setModal] = useState(false);
+    const [request,setRequest] = useState(null);
+    const [httpResponse,httpError,httpLoader] = useHttp(request); /* it is called as array destructuring */
+
+    const register = (e) =>{
+        e.preventDefault();
+        return setRequest({
+            method : "get",
+            url : "https://jsonplaceholder.typicode.com/posts"
+        })
+    }
+
+
     const design = (
         <>
             <Container className="py-4">
+                {
+                   JSON.stringify(httpLoader)
+                }
                 <h1 className="text-center fw-bold">Curd Operations in Reactjs</h1>
                 <Button 
                 onClick={()=>setModal(true)}
@@ -45,7 +62,7 @@ const Register = () =>{
                         <Modal.Title>New Register</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                            <Form>
+                            <Form onSubmit={register}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control placeholder="Name" />
@@ -66,7 +83,7 @@ const Register = () =>{
                                     <Form.Label>Mobile</Form.Label>
                                     <Form.Control placeholder="mobile" />
                                 </Form.Group>
-                                <Button className="bg-danger w-100 border-0">Register</Button>
+                                <Button type="submit" className="bg-danger w-100 border-0">Register</Button>
                             </Form>
                         </Modal.Body>
                 </Modal>
