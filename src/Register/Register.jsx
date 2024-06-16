@@ -9,6 +9,7 @@ import {
  import { useEffect, useState } from "react";
 import useHttp from "../Hooks/useHttp";
 import SweetAlert from "react-bootstrap-sweetalert";
+import axios from "axios";
  
 
 
@@ -25,19 +26,21 @@ const Register = () =>{
     const [input,setInput] = useState(registerData);
     const [modal,setModal] = useState(false);
     const [data,setData] = useState(null)
-    const [request,setRequest] = useState({
+    /* const [request,setRequest] = useState({
         method : "get",
         url : "http://localhost:8080/0/5"
-    });
+    }); */
     const [sweetAlert,setSweetAlert] = useState({
         state : false,
         title : "",
         icon : "default",
         message : ""
     })
-    const [httpResponse,httpError,httpLoader] = useHttp(request); /* it is called as array destructuring */
+    /* const [httpResponse,httpError,httpLoader] = useHttp(request); */ /* array destructuring */
 
-    useEffect(()=>{
+
+    /* As no redux is getting used so we are going to switch to other method */
+   /*  useEffect(()=>{
         if(request.method){
            if(httpResponse){
             setData(httpResponse.data)
@@ -64,7 +67,7 @@ const Register = () =>{
                 })
             }
         }
-    },[httpResponse,httpError,httpLoader])
+    },[httpResponse,httpError,httpLoader]) */
 
     const Alert = () =>{
         const a = (
@@ -88,14 +91,53 @@ const Register = () =>{
         );
         return a;
     }
+    useEffect(()=>{
+        getData();
+    },[])
 
-    const register = (e) =>{
+    const getData = async() =>{
+        const response = await axios({
+            method : "get",
+            url : "http://localhost:8080/0/20"
+        });
+        return setData(response.data.data);
+    }
+
+    const register = async (e) =>{
         e.preventDefault();
-        return setRequest({
+        try {
+            const response = await axios({
+                method : "post",
+                url : "http://localhost:8080/register",
+                data : input
+            });
+            getData();
+            return (
+                setSweetAlert(
+                    {
+                        state : true,
+                        message : "Data Inserted",
+                        title : response.data.message,
+                        icon : "success"
+                    }
+                ),
+                setModal(false)
+            )
+        } catch (error) {
+            return (
+                setSweetAlert({
+                    state : true,
+                    title : error.response.data,
+                    icon: "warning",
+                    message : error.response.data
+                })
+            )
+        }
+        /* return setRequest({
             method : "post",
             url : "http://localhost:8080/register",
             data : input
-        })
+        }) */
         /* next day work */
     }
 
