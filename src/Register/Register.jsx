@@ -25,7 +25,9 @@ const Register = () =>{
 
     const [input,setInput] = useState(registerData);
     const [modal,setModal] = useState(false);
-    const [data,setData] = useState(null)
+    const [data,setData] = useState(null);
+    const [id,setId] = useState("");
+    const [form,setForm] = useState(true);
     /* const [request,setRequest] = useState({
         method : "get",
         url : "http://localhost:8080/0/5"
@@ -168,9 +170,89 @@ const Register = () =>{
             })
         }
     }
+
+    const edit = (item) =>{
+        return (
+            setId(item._id),
+            setModal(true),
+            setInput(item),
+            setForm(false)
+        )
+
+    };
+
+    const update = async (e) =>{
+        e.preventDefault();
+        try {
+            const response = await axios({
+                method : "put",
+                url : "http://localhost:8080/register/"+id,
+                data : input
+            });
+            getData();
+            return(
+                setSweetAlert({
+                    state : true,
+                    message : response.data.message,
+                    title : response.data.message,
+                    icon : "success"
+                }),
+                setModal(false),
+                setForm(true),
+                setInput({
+                    name : "",
+                    email : "",
+                    password : "",
+                    mobile : "",
+                    profile : ""
+                })
+            )
+        } catch (error) {
+            return(
+                setSweetAlert({
+                    state : false,
+                    message : error.response.data,
+                    title : error.response.data,
+                    icon : "success"
+                })
+            )
+    }
+    };
+
+    const deleteUser = async (id) =>{
+        const cnf = window.confirm("Do you want to delete this data");
+        if(cnf){
+            try {
+                const response = await axios({
+                    method : "delete",
+                    url : "http://localhost:8080/register/"+id
+                });
+                getData();
+                return (
+                    setSweetAlert({
+                        state : true,
+                        message : response.data.message,
+                        title : response.data.message,
+                        icon : "success"
+                    })
+                )
+            } catch (error) {
+                return (
+                    setSweetAlert({
+                        state : true,
+                        message : error.response.data,
+                        title : error.response.data,
+                        icon : "warning"
+                    })
+                )
+            }
+        }
+        else{
+            alert("Your Data is safe")
+        }
+    }
     
     const Tr = ({item}) =>{
-        console.log(item)
         const design =(
             <>
                 <tr>
@@ -183,8 +265,14 @@ const Register = () =>{
                     <td>{item.email}</td>
                     <td>{item.password}</td>
                     <td>
-                        <button className="btn btn-primary px-2 p-1 mx-2"><i className="fa fa-edit"></i></button>
-                        <button className="btn btn-danger px-2 p-1 mx-2"><i className="fa fa-trash"></i></button>
+                        <button 
+                        onClick={()=>{
+                            edit(item)
+                        }}
+                        className="btn btn-primary px-2 p-1 mx-2"><i className="fa fa-edit"></i></button>
+                        <button 
+                        onClick={()=>deleteUser(item._id)}
+                        className="btn btn-danger px-2 p-1 mx-2"><i className="fa fa-trash"></i></button>
                     </td>
                 </tr>
             </>
@@ -192,11 +280,27 @@ const Register = () =>{
         return design;
     }
 
+    const control = () =>{
+        return (
+            setModal(false),
+            setForm(true),
+            setInput(
+                {
+                    name : "",
+                    email : "",
+                    password : "",
+                    mobile : "",
+                    profile : ""
+                }
+            )
+        )
+    }
+
 
     const design = (
         <>
             <Alert />
-            <Container className="py-4">
+            <Container className="py-4 bg-secondary text-white">
                
                 <h1 className="text-center fw-bold">Curd Operations in Reactjs</h1>
                 <Button 
@@ -223,12 +327,12 @@ const Register = () =>{
                         }
                     </tbody>
                 </Table>
-                <Modal show={modal} onHide={()=>setModal(false)}>
+                <Modal show={modal} onHide={()=>{control();}}>
                     <Modal.Header closeButton>
                         <Modal.Title>New Register</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                            <Form onSubmit={register}>
+                            <Form onSubmit={form ? register : update}>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Name</Form.Label>
                                     <Form.Control placeholder="Name" name="name" value={input.name} onChange={updateValue}/>
@@ -249,7 +353,11 @@ const Register = () =>{
                                     <Form.Label>Mobile</Form.Label>
                                     <Form.Control placeholder="mobile" name="mobile" value={input.mobile} onChange={updateValue} />
                                 </Form.Group>
-                                <Button type="submit" className="bg-danger w-100 border-0">Register</Button>
+                                {
+                                    form ?    <Button type="submit" className="bg-danger w-100 border-0">Register</Button> 
+                                    :    <Button type="submit" className="bg-primary w-100 border-0">Update</Button> 
+                                }
+                             
                                
                             </Form>
                         </Modal.Body>
