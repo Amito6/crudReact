@@ -30,7 +30,7 @@ const Register = () =>{
     const [form,setForm] = useState(true);
     /* const [request,setRequest] = useState({
         method : "get",
-        url : "http://localhost:8080/0/5"
+        url : "https://crudreactbackend.onrender.com/0/5"
     }); */
     const [sweetAlert,setSweetAlert] = useState({
         state : false,
@@ -100,7 +100,7 @@ const Register = () =>{
     const getData = async() =>{
         const response = await axios({
             method : "get",
-            url : "http://localhost:8080/0/20"
+            url : "https://crudreactbackend.onrender.com/0/20"
         });
         return setData(response.data.data);
     }
@@ -110,7 +110,7 @@ const Register = () =>{
         try {
             const response = await axios({
                 method : "post",
-                url : "http://localhost:8080/register",
+                url : "https://crudreactbackend.onrender.com/register",
                 data : input
             });
             getData();
@@ -137,7 +137,7 @@ const Register = () =>{
         }
         /* return setRequest({
             method : "post",
-            url : "http://localhost:8080/register",
+            url : "https://crudreactbackend.onrender.com/register",
             data : input
         }) */
         /* next day work */
@@ -186,7 +186,7 @@ const Register = () =>{
         try {
             const response = await axios({
                 method : "put",
-                url : "http://localhost:8080/register/"+id,
+                url : "https://crudreactbackend.onrender.com/register/"+id,
                 data : input
             });
             getData();
@@ -225,7 +225,7 @@ const Register = () =>{
             try {
                 const response = await axios({
                     method : "delete",
-                    url : "http://localhost:8080/register/"+id
+                    url : "https://crudreactbackend.onrender.com/register/"+id
                 });
                 getData();
                 return (
